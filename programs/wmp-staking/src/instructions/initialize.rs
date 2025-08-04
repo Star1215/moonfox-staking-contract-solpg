@@ -8,7 +8,7 @@ use crate::state::*;
 pub fn handler(ctx: Context<Initialize>) -> ProgramResult {
     let global_data = &mut ctx.accounts.global_data;
 
-    global_data.bump = *ctx.bumps.get("global_data").unwrap();
+    global_data.bump = ctx.bumps.global_data;
     global_data.id = 0;
 
     Ok(())

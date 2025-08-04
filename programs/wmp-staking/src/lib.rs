@@ -10,7 +10,7 @@ use anchor_lang::solana_program::entrypoint::ProgramResult;
 declare_id!("4NwpwZsSoqRQZu8EKCuG5oujwPfyMyRxZSjm7x2HXrmB");
 
 #[program]
-pub mod wmp_staking {
+pub mod mfox_staking {
     use super::*;
 
     pub fn initialize(ctx: Context<Initialize>) -> ProgramResult {

@@ -3,7 +3,7 @@ use anchor_lang::{
     solana_program::entrypoint::ProgramResult
 };
 use anchor_spl::{token::{Token, Mint, TokenAccount}, associated_token::AssociatedToken};
-use crate::state::{STAKE_POOL_PREFIX, REWARD_ESCROW_A_PREFIX, REWARD_ESCROW_B_PREFIX, REWARD_ESCROW_FEE_PREFIX};
+use crate::state::{STAKE_POOL_PREFIX, REWARD_ESCROW_A_PREFIX, REWARD_ESCROW_B_PREFIX};
 use crate::state::*;
 
 pub fn handler(ctx: Context<CreateStakePool>, fee: u64) -> ProgramResult {
@@ -14,7 +14,7 @@ pub fn handler(ctx: Context<CreateStakePool>, fee: u64) -> ProgramResult {
         "create_stake_pool handler"
     );
 
-    stake_pool.bump = *ctx.bumps.get("stake_pool").unwrap();
+    stake_pool.bump = ctx.bumps.stake_pool;
     stake_pool.id = global_data.id;
     stake_pool.mint_a = ctx.accounts.mint_a.key();
     stake_pool.mint_b = ctx.accounts.mint_b.key();
