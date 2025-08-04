@@ -21,6 +21,10 @@ pub mod mfox_staking {
         instructions::set_stake_pool_rewards::handler(ctx, rewards_per_second, period_timestamp)
     }
 
+    pub fn set_stake_pool_locks(ctx: Context<SetStakePoolLocks>, lock_period: u64) -> ProgramResult {
+        instructions::set_stake_pool_locks::handler(ctx, lock_period)
+    }
+
     pub fn create_stake_pool(ctx: Context<CreateStakePool>, fee: u64) -> ProgramResult {
         instructions::create_stake_pool::handler(ctx, fee)
     }
@@ -33,7 +37,7 @@ pub mod mfox_staking {
         instructions::stake::handler(ctx, amount)
     }
 
-    pub fn unstake(ctx: Context<Unstake>, amount: u64) -> ProgramResult {
+    pub fn unstake(ctx: Context<Unstake>, amount: u64) -> Result<()> {
         instructions::unstake::handler(ctx, amount)
     }
 

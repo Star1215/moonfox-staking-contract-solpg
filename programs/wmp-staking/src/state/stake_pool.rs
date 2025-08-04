@@ -19,6 +19,7 @@ pub struct StakePool {
     pub escrow_b: Pubkey,
     // pub escrow_fee: Pubkey,
     pub creator: Pubkey,
+    pub lock_period: u64,
     pub rewards_per_second: u64,
     pub fee: u64,
     pub rewards_per_token_stored: u64,

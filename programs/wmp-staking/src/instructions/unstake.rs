@@ -1,14 +1,21 @@
-use anchor_lang::{prelude::*, solana_program::entrypoint::ProgramResult, Accounts};
-use anchor_spl::token::{Mint, Token, TokenAccount, Transfer, transfer};
-use crate::rewards::update_rewards;
-use crate::state::{STAKE_ENTRY_PREFIX, STAKE_POOL_PREFIX, StakePool, StakeEntry};
+use anchor_lang::{prelude::*, Accounts};
+use anchor_spl::token::{transfer, Mint, Token, TokenAccount, Transfer};
 use crate::error::ErrorCode;
+use crate::rewards::update_rewards;
+use crate::state::{StakeEntry, StakePool, STAKE_ENTRY_PREFIX, STAKE_POOL_PREFIX};
 
-pub fn handler(ctx: Context<Unstake>, amount: u64) -> ProgramResult {
+pub fn handler(ctx: Context<Unstake>, amount: u64) -> Result<()> {
     let stake_pool_account_info = ctx.accounts.stake_pool.clone().to_account_info();
-    
+
     let stake_pool = &mut ctx.accounts.stake_pool;
     let stake_entry = &mut ctx.accounts.stake_entry;
+
+    let cur_timestamp = u64::try_from(Clock::get()?.unix_timestamp).unwrap();
+
+    require!(
+        cur_timestamp >= stake_entry.last_staked_time + stake_pool.lock_period,
+        ErrorCode::LockPeriodNotOver,
+    );
 
     update_rewards(stake_pool, stake_entry)?;
 
@@ -18,17 +25,21 @@ pub fn handler(ctx: Context<Unstake>, amount: u64) -> ProgramResult {
     let accounts = Transfer {
         from: ctx.accounts.escrow_a.to_account_info(),
         to: ctx.accounts.staker_token_a.to_account_info(),
-        authority: stake_pool_account_info
+        authority: stake_pool_account_info,
     };
 
     let seeds = &[
         STAKE_POOL_PREFIX.as_bytes(),
         &stake_pool.id.to_le_bytes(),
-        &[stake_pool.bump]
+        &[stake_pool.bump],
     ];
     let signer_seeds = &[&seeds[..]];
 
-    let transfer_context = CpiContext::new_with_signer(ctx.accounts.token_program.to_account_info(), accounts, signer_seeds);
+    let transfer_context = CpiContext::new_with_signer(
+        ctx.accounts.token_program.to_account_info(),
+        accounts,
+        signer_seeds,
+    );
 
     transfer(transfer_context, amount)?;
 
@@ -76,5 +87,5 @@ pub struct Unstake<'info> {
 
     pub mint_a: Account<'info, Mint>,
 
-    pub token_program: Program<'info, Token>
+    pub token_program: Program<'info, Token>,
 }

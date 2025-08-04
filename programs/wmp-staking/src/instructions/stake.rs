@@ -14,6 +14,8 @@ pub fn handler(ctx: Context<Stake>, amount: u64) -> ProgramResult {
     let fee_amount = amount * stake_pool.fee / 100;
     stake_pool.balance += amount - fee_amount;
     stake_entry.balance += amount - fee_amount;
+    let cur_timestamp = u64::try_from(Clock::get()?.unix_timestamp).unwrap();
+    stake_entry.last_staked_time = cur_timestamp;
 
     let accounts = Transfer {
         from: ctx.accounts.staker_token_a.to_account_info(),

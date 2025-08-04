@@ -11,5 +11,6 @@ pub struct StakeEntry {
     pub pool: Pubkey,
     pub balance: u64,
     pub rewards: u64,
-    pub rewards_per_token_paid: u64
+    pub rewards_per_token_paid: u64,
+    pub last_staked_time: u64
 }

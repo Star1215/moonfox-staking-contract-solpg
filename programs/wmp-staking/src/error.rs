@@ -9,5 +9,8 @@ pub enum ErrorCode {
     TokenAMintMismatch,
 
     #[msg("Token B mint mismatch")]
-    TokenBMintMismatch
+    TokenBMintMismatch,
+
+    #[msg("Lock period not over.")]
+    LockPeriodNotOver,
 }
